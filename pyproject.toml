@@ -5,6 +5,7 @@ description = "A telegram bot that reminds you to drink water"
 requires-python = ">=3.14"
 dependencies = [
     "aiogram>=3.26.0",
+    "pydantic>=2.12.5",
     "pydantic-settings>=2.13.1",
 ]
 
@@ -28,3 +29,6 @@ warn_return_any = true
 disallow_untyped_defs = true
 warn_unused_ignores = true
 warn_no_return = true
+plugins = [
+    "pydantic.mypy",
+]
