@@ -54,7 +54,11 @@ jobs:
         run: uv sync --locked --all-extras --dev
 
       - name: Run python tests
-        run: uv run pytest --cov=water_bot --cov-report=xml:coverage.xml
+        run: |
+          uv run pytest \
+            --cov=water_bot \
+            --cov-report=term-missing \
+            --cov-report=xml:coverage.xml
 
       - name: Upload artefacts
         uses: actions/upload-artifact@v4
