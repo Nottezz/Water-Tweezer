@@ -1,0 +1,36 @@
+name: Python checks 🐍
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+    paths:
+      - water_bot/**
+
+jobs:
+  run-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: 3.14
+
+      - name: Setup UV
+        uses: astral-sh/setup-uv@v7
+
+      - name: Install the project
+        run: uv sync --locked --all-extras --dev
+
+      - name: Run black
+        run: uv run black . --check --diff
+
+      - name: Run isort
+        run: uv run isort . --check-only --diff
+
+      - name: Run mypy
+        run: uv run mypy .
