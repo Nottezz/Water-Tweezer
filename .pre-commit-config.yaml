@@ -26,3 +26,4 @@ repos:
         additional_dependencies:
           - pydantic>=2.12.5
           - pydantic-settings>=2.13.1
+          - aiogram>=3.26.0
