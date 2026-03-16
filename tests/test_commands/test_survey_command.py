@@ -61,7 +61,7 @@ async def test_set_interval_handler() -> None:
 
 
 @pytest.mark.asyncio
-async def test_full_fsm_survey_flow(async_session, monkeypatch):
+async def test_full_fsm_survey_flow(async_session, monkeypatch) -> None:
     state = AsyncMock()
     state.get_data = AsyncMock(
         return_value={

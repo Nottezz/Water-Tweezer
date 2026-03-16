@@ -60,7 +60,7 @@ async def test_handle_about() -> None:
 
 
 @pytest.mark.asyncio
-async def test_handle_settings_user_not_created():
+async def test_handle_settings_user_not_created() -> None:
     message = AsyncMock(spec=Message)
     message.from_user = MagicMock()
     message.from_user.id = 12345
@@ -76,7 +76,7 @@ async def test_handle_settings_user_not_created():
 
 
 @pytest.mark.asyncio
-async def test_handle_settings_user_exists():
+async def test_handle_settings_user_exists() -> None:
     message = AsyncMock(spec=Message)
     message.from_user = MagicMock()
     message.from_user.id = 12345
