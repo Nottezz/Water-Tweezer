@@ -29,6 +29,19 @@ class LoggingConfig(BaseModel):
         return logging.getLevelNamesMapping()[self.log_level_name]
 
 
+class DataBaseConfig(BaseModel):
+    host: str
+    port: int
+    username: str
+    password: str
+    name: str
+    echo: bool = False
+
+    @property
+    def database_url_asyncpg(self) -> str:
+        return f"postgresql+asyncpg://{self.username}:{self.password}@{self.host}:{self.port}/{self.name}"
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         case_sensitive=False,
@@ -76,6 +89,7 @@ class Settings(BaseSettings):
         )
 
     logging: LoggingConfig = LoggingConfig()
+    database: DataBaseConfig
     telegram_bot_token: str
 
 
