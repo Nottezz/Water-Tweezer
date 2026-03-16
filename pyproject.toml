@@ -40,3 +40,4 @@ warn_no_return = true
 plugins = [
     "pydantic.mypy",
 ]
+exclude = ["alembic/"]

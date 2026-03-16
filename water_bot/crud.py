@@ -1,5 +1,5 @@
-from sqlalchemy import select  # type: ignore
-from sqlalchemy.ext.asyncio import AsyncSession  # type: ignore
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from water_bot.models.users import UserSettings
 from water_bot.schemas import UserSettingsCreate, UserSettingsUpdate
