@@ -1,6 +1,10 @@
 from aiogram import Router, types
+from aiogram.enums import ParseMode
 from aiogram.filters import Command, CommandStart
+from aiogram.utils import markdown
 
+from water_bot import crud
+from water_bot.database import AsyncSessionLocal
 from water_bot.keyboards.reply import get_on_start_kb
 
 router = Router(name=__name__)
@@ -16,14 +20,14 @@ async def handle_start(message: types.Message) -> None:
 📊 Собирать статистику потребления
 🎯 Помогать достигать дневной цели
 
-Чтобы начать, мне нужно выполнить настройку. Нажми кнопку ниже, я задам несколько вопросов:
+Чтобы начать, введите команду /settings, затем нажмите появившуюся кнопку ниже:
 — сколько воды ты хочешь пить в день
 — как часто присылать напоминания
 - твоя тайм-зона
 
 Напиши /help чтобы узнать доступные команды.
 """
-    await message.answer(text=text, reply_markup=get_on_start_kb())
+    await message.answer(text=text, reply_markup=types.ReplyKeyboardRemove())
 
 
 @router.message(Command("help"))
@@ -32,6 +36,7 @@ async def handle_help(message: types.Message) -> None:
 📌 Доступные команды:
 
 /start — начать работу с ботом и настроить напоминания
+/settings - посмотреть настройки
 /help — показать список команд
 /about — информация о боте
 
@@ -61,3 +66,33 @@ async def handle_about(message: types.Message) -> None:
 Автор: https://nottezz.ru
 """
     await message.answer(text=text)
+
+
+@router.message(Command("settings"))
+async def handle_settings(message: types.Message) -> None:
+
+    if message.from_user is None:
+        return
+
+    telegram_id = message.from_user.id
+
+    async with AsyncSessionLocal() as session:
+        user = await crud.get_user(session, telegram_id)
+        if not user:
+            await message.answer(
+                text="Вы ещё не выполнили первоначальную настройку. Нажмите кнопку ниже для выполнения.",
+                reply_markup=get_on_start_kb(),
+            )
+            return
+
+    text = f"""
+    Текущие настройки
+- Дневная цель: {markdown.hbold(user.daily_goal)} мл
+- Интервал напоминаний: {markdown.hbold(user.interval)} минут
+- Тайм-зона: {markdown.hbold(user.timezone)}
+
+Если вы хотите изменить настройки - кликните на кнопку ниже
+    """
+    await message.answer(
+        text=text, reply_markup=get_on_start_kb(), parse_mode=ParseMode.HTML
+    )

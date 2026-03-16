@@ -1,0 +1,24 @@
+services:
+
+  database:
+    image: postgres:18
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${WTBOT__DATABASE__NAME}
+      POSTGRES_USER: ${WTBOT__DATABASE__USERNAME}
+      POSTGRES_PASSWORD: ${WTBOT__DATABASE__PASSWORD}
+      PGDATA: /var/lib/postgresql/18/docker
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/18/docker
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  pgdata:

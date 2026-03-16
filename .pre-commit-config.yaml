@@ -22,9 +22,12 @@ repos:
     rev: v1.19.1
     hooks:
       - id: mypy
+        files: ^water_bot/
         args: [--config-file=pyproject.toml]
         additional_dependencies:
           - pydantic>=2.12.5
           - pydantic-settings>=2.13.1
           - aiogram>=3.26.0
           - pytest>=9.0.2
+          - sqlalchemy[asyncio]>=2.0.48
+          - sqlalchemy-stubs>=0.4
