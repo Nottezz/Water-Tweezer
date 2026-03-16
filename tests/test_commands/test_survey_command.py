@@ -2,6 +2,7 @@ from unittest.mock import AsyncMock
 
 import pytest
 
+from water_bot.crud import get_user
 from water_bot.keyboards.reply import TIMEZONE_OPTIONS
 from water_bot.routers.commands.survey_commands import (
     set_daily_goal,
@@ -60,9 +61,23 @@ async def test_set_interval_handler() -> None:
 
 
 @pytest.mark.asyncio
-async def test_full_fsm_survey_flow() -> None:
+async def test_full_fsm_survey_flow(async_session, monkeypatch):
     state = AsyncMock()
+    state.get_data = AsyncMock(
+        return_value={
+            "daily_goal": 2000,
+            "interval": 60,
+            "user_timezone": "Europe/Moscow",
+        }
+    )
     message = AsyncMock()
+    message.from_user.id = 12345
+
+    monkeypatch.setattr(
+        "water_bot.routers.commands.survey_commands.AsyncSessionLocal",
+        lambda: async_session,
+    )
+
     message.text = "⚙️ Настроить напоминание"
     await start_setup(message, state)
     state.set_state.assert_called_with(WaterSurvey.daily_goal)
@@ -85,3 +100,9 @@ async def test_full_fsm_survey_flow() -> None:
     message.text = "Да"
     await set_user_settings_if_yes(message, state)
     state.clear.assert_called_once()
+
+    user = await get_user(async_session, 12345)
+    assert user is not None
+    assert user.daily_goal == 2000
+    assert user.interval == 60
+    assert user.timezone == "Europe/Moscow"
