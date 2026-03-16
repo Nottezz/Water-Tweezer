@@ -3,6 +3,8 @@ from aiogram.enums import ParseMode
 from aiogram.fsm.context import FSMContext
 from aiogram.utils import markdown
 
+from water_bot import crud
+from water_bot.database import AsyncSessionLocal
 from water_bot.filters import IsPositiveInt
 from water_bot.keyboards.reply import (
     build_yes_or_no_keyboard,
@@ -10,6 +12,7 @@ from water_bot.keyboards.reply import (
     remainder_timer_keyboard,
     timezone_keyboard,
 )
+from water_bot.schemas import UserSettingsCreate, UserSettingsUpdate
 from water_bot.survey_states import WaterSurvey
 
 router = Router(name=__name__)
@@ -81,7 +84,33 @@ async def set_user_timezone_and_clean_state(
 async def set_user_settings_if_yes(message: types.Message, state: FSMContext) -> None:
     data = await state.get_data()
 
-    # save to Data Base
+    if message.from_user is None:
+        return
+
+    telegram_id = message.from_user.id
+
+    async with AsyncSessionLocal() as session:
+        existing_user = await crud.get_user(session, telegram_id)
+        if existing_user:
+            await crud.update_user(
+                session,
+                telegram_id,
+                UserSettingsUpdate(
+                    daily_goal=data["daily_goal"],
+                    interval=data["interval"],
+                    timezone=data["user_timezone"],
+                ),
+            )
+        else:
+            await crud.create_user(
+                session,
+                UserSettingsCreate(
+                    telegram_id=telegram_id,
+                    daily_goal=data["daily_goal"],
+                    interval=data["interval"],
+                    timezone=data["user_timezone"],
+                ),
+            )
 
     await message.answer(
         text="✅ Настройки сохранены!\n\nЯ буду регулярно напоминать пить воду 💧",
