@@ -29,3 +29,5 @@ repos:
           - pydantic-settings>=2.13.1
           - aiogram>=3.26.0
           - pytest>=9.0.2
+          - sqlalchemy[asyncio]>=2.0.48
+          - sqlalchemy-stubs>=0.4
