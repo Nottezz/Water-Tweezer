@@ -1,5 +1,5 @@
 from datetime import UTC, datetime, timedelta, timezone
-from typing import TYPE_CHECKING, AsyncGenerator, Callable
+from typing import TYPE_CHECKING
 from zoneinfo import ZoneInfo
 
 from sqlalchemy import select
@@ -8,11 +8,10 @@ from water_bot.keyboards.inline import water_intake_keyboard
 from water_bot.models.reminder import Reminder
 
 if TYPE_CHECKING:
-    from aiogram import Bot
     from sqlalchemy.ext.asyncio import AsyncSession
 
 
-async def process_reminder(reminder: Reminder, session: AsyncSession, bot: Bot) -> None:
+async def process_reminder(reminder: Reminder, session: AsyncSession, bot) -> None:
     user_tz = ZoneInfo(reminder.timezone)
     now_user = datetime.now(user_tz)
 
@@ -40,9 +39,7 @@ async def process_reminder(reminder: Reminder, session: AsyncSession, bot: Bot) 
     await session.commit()
 
 
-async def check_reminders(
-    session_factory: Callable[[], AsyncGenerator[AsyncSession, None]], bot: Bot
-) -> None:
+async def check_reminders(session_factory, bot) -> None:
     async with session_factory() as session:
         now = datetime.now(UTC)
 
