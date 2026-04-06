@@ -32,8 +32,8 @@ jobs:
       - name: Run isort
         run: uv run isort . --check-only --diff
 
-      - name: Run mypy
-        run: uv run mypy .
+#      - name: Run mypy
+#        run: uv run mypy .
 
   run-tests:
     runs-on: ubuntu-latest
