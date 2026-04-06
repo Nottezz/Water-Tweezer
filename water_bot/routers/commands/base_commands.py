@@ -2,6 +2,7 @@ from aiogram import Router, types
 from aiogram.enums import ParseMode
 from aiogram.filters import Command, CommandStart
 from aiogram.utils import markdown
+from keyboards.inline import settings_keyboard
 
 from water_bot import crud
 from water_bot.database import AsyncSessionLocal
@@ -85,14 +86,16 @@ async def handle_settings(message: types.Message) -> None:
             )
             return
 
+        active_reminder = await crud.get_active_reminder(session, telegram_id)
+
     text = f"""
     Текущие настройки
 - Дневная цель: {markdown.hbold(user.daily_goal)} мл
 - Интервал напоминаний: {markdown.hbold(user.interval)} минут
 - Тайм-зона: {markdown.hbold(user.timezone)}
-
-Если вы хотите изменить настройки - кликните на кнопку ниже
     """
     await message.answer(
-        text=text, reply_markup=get_on_start_kb(), parse_mode=ParseMode.HTML
+        text=text,
+        reply_markup=settings_keyboard(has_active_reminder=active_reminder is not None),
+        parse_mode=ParseMode.HTML,
     )
