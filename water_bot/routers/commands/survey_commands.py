@@ -5,7 +5,7 @@ from aiogram.utils import markdown
 
 from water_bot import crud
 from water_bot.database import AsyncSessionLocal
-from water_bot.filters import IsPositiveInt
+from water_bot.filters import IsPositiveInt, IsValidTimezone
 from water_bot.keyboards.reply import (
     build_yes_or_no_keyboard,
     daily_goal_keyboard,
@@ -57,7 +57,7 @@ async def set_interval(message: types.Message, state: FSMContext) -> None:
     await state.set_state(WaterSurvey.user_timezone)
 
 
-@router.message(WaterSurvey.user_timezone, F.text)
+@router.message(WaterSurvey.user_timezone, IsValidTimezone())
 async def set_user_timezone_and_clean_state(
     message: types.Message, state: FSMContext
 ) -> None:
@@ -111,6 +111,13 @@ async def set_user_settings_if_yes(message: types.Message, state: FSMContext) ->
                     timezone=data["user_timezone"],
                 ),
             )
+        await crud.deactivate_user_reminders(session, telegram_id)
+        await crud.create_reminder(
+            session=session,
+            user_id=telegram_id,
+            interval=data["interval"],
+            tz=data["user_timezone"],
+        )
 
     await message.answer(
         text="✅ Настройки сохранены!\n\nЯ буду регулярно напоминать пить воду 💧",

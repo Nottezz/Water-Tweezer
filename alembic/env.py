@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncConnection, create_async_engine
 
 from alembic import context
 from water_bot.config import settings
-from water_bot.models import Base, UserSettings
+from water_bot.models import Base, Reminder, UserSettings, WaterIntake
 
 target_metadata = Base.metadata
 
