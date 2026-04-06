@@ -20,5 +20,5 @@ class IsValidTimezone(BaseFilter):
         try:
             ZoneInfo(message.text)
             return True
-        except ZoneInfoNotFoundError, KeyError:
+        except ZoneInfoNotFoundError, KeyError, ValueError:
             return False
