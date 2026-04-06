@@ -1,6 +1,11 @@
-from sqlalchemy import select
+from datetime import UTC, datetime, timedelta, timezone
+from zoneinfo import ZoneInfo
+
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from water_bot.models.intake import WaterIntake
+from water_bot.models.reminder import Reminder
 from water_bot.models.users import UserSettings
 from water_bot.schemas import UserSettingsCreate, UserSettingsUpdate
 
@@ -40,3 +45,66 @@ async def update_user(
     await session.commit()
     await session.refresh(user)
     return user
+
+
+async def create_reminder(
+    session: AsyncSession, user_id: int, interval: int, tz: str
+) -> Reminder:
+    now = datetime.now(ZoneInfo(tz))
+
+    next_run = now + timedelta(minutes=interval)
+
+    reminder = Reminder(
+        user_id=user_id,
+        interval_minutes=interval,
+        timezone=tz,
+        next_run_at=next_run.astimezone(timezone.utc),
+    )
+
+    session.add(reminder)
+    await session.commit()
+    return reminder
+
+
+async def get_due_reminders(session: AsyncSession) -> list[Reminder]:
+    now = datetime.now(UTC)
+
+    result = await session.execute(
+        select(Reminder).where(  # type: ignore[call-arg]
+            Reminder.is_active == True,
+            Reminder.next_run_at <= now,
+        )
+    )
+    return result.scalars().all()  # type: ignore
+
+
+async def get_active_reminder(session: AsyncSession, user_id: int) -> Reminder | None:
+    result = await session.scalars(
+        select(Reminder).where(  # type: ignore
+            Reminder.user_id == user_id,
+            Reminder.is_active == True,
+        )
+    )
+    return result.one_or_none()  # type: ignore
+
+
+async def deactivate_user_reminders(session: AsyncSession, user_id: int) -> None:
+    await session.execute(
+        update(Reminder)  # type: ignore[arg-type]
+        .where(Reminder.user_id == user_id, Reminder.is_active == True)  # type: ignore[call-arg]
+        .values(is_active=False)
+    )
+    await session.commit()
+
+
+async def create_intake(
+    session: AsyncSession, user_id: int, amount_ml: int
+) -> WaterIntake:
+    intake = WaterIntake(
+        user_id=user_id,
+        amount_ml=amount_ml,
+        recorded_at=datetime.now(UTC),
+    )
+    session.add(intake)
+    await session.commit()
+    return intake
