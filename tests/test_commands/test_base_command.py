@@ -89,10 +89,14 @@ async def test_handle_settings_user_exists() -> None:
 
     with patch("water_bot.crud.get_user", new=AsyncMock(return_value=FakeUser())):
         with patch(
-            "water_bot.routers.commands.base_commands.markdown.hbold",
-            side_effect=lambda x: f"**{x}**",
+            "water_bot.crud.get_active_reminder",
+            new=AsyncMock(return_value=MagicMock()),
         ):
-            await base_commands.handle_settings(message)
+            with patch(
+                "water_bot.routers.commands.base_commands.markdown.hbold",
+                side_effect=lambda x: f"**{x}**",
+            ):
+                await base_commands.handle_settings(message)
 
     message.answer.assert_called_once()
     text_sent = message.answer.call_args[1]["text"]
