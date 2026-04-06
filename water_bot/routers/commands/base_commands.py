@@ -99,3 +99,29 @@ async def handle_settings(message: types.Message) -> None:
         reply_markup=settings_keyboard(has_active_reminder=active_reminder is not None),
         parse_mode=ParseMode.HTML,
     )
+
+
+@router.message(Command("stats"))
+async def handle_stats(message: types.Message) -> None:
+    if message.from_user is None:
+        return
+
+    async with AsyncSessionLocal() as session:
+        user = await crud.get_user(session, message.from_user.id)
+        if not user:
+            await message.answer("Сначала выполните настройку — /settings")
+            return
+
+        consumed = await crud.get_daily_intake(session, message.from_user.id)
+
+    percent = min(int(consumed / user.daily_goal * 100), 100)
+    filled = percent // 10
+    bar = "🟦" * filled + "⬜" * (10 - filled)
+
+    text = f"""
+📊 Статистика за сегодня
+
+{bar} {percent}%
+Выпито: {markdown.hbold(consumed)} мл из {markdown.hbold(user.daily_goal)} мл
+    """
+    await message.answer(text=text, parse_mode=ParseMode.HTML)
