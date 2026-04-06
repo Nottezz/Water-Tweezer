@@ -2,10 +2,10 @@ from aiogram import F, Router, types
 from aiogram.enums import ParseMode
 from aiogram.fsm.context import FSMContext
 from aiogram.utils import markdown
-from keyboards.inline import settings_keyboard
 
 from water_bot import crud
 from water_bot.database import AsyncSessionLocal
+from water_bot.keyboards.inline import settings_keyboard
 from water_bot.keyboards.reply import daily_goal_keyboard
 from water_bot.survey_states import WaterSurvey
 
