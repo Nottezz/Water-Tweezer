@@ -104,3 +104,70 @@ async def test_handle_settings_user_exists() -> None:
     assert "60" in text_sent
     assert "Europe/Moscow" in text_sent
     assert message.answer.call_args[1]["parse_mode"] == "HTML"
+
+
+@pytest.mark.asyncio
+async def test_handle_stats_user_not_found() -> None:
+    message = AsyncMock(spec=Message)
+    message.from_user = MagicMock()
+    message.from_user.id = 12345
+    message.answer = AsyncMock()
+
+    with patch("water_bot.crud.get_user", new=AsyncMock(return_value=None)):
+        await base_commands.handle_stats(message)
+
+    message.answer.assert_called_once()
+    assert "/settings" in message.answer.call_args[0][0]
+
+
+@pytest.mark.asyncio
+async def test_handle_stats_no_user() -> None:
+    message = AsyncMock(spec=Message)
+    message.from_user = None
+    message.answer = AsyncMock()
+
+    await base_commands.handle_stats(message)
+
+    message.answer.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_handle_stats_shows_progress() -> None:
+    message = AsyncMock(spec=Message)
+    message.from_user = MagicMock()
+    message.from_user.id = 12345
+    message.answer = AsyncMock()
+
+    class FakeUser:
+        daily_goal = 2000
+
+    with patch("water_bot.crud.get_user", new=AsyncMock(return_value=FakeUser())):
+        with patch("water_bot.crud.get_daily_intake", new=AsyncMock(return_value=1000)):
+            await base_commands.handle_stats(message)
+
+    message.answer.assert_called_once()
+    kwargs = message.answer.call_args[1]
+    assert "Статистика за сегодня" in kwargs["text"]
+    assert "1000" in kwargs["text"]
+    assert "2000" in kwargs["text"]
+    assert "50%" in kwargs["text"]
+    assert kwargs["parse_mode"] == "HTML"
+
+
+@pytest.mark.asyncio
+async def test_handle_stats_caps_at_100_percent() -> None:
+    message = AsyncMock(spec=Message)
+    message.from_user = MagicMock()
+    message.from_user.id = 12345
+    message.answer = AsyncMock()
+
+    class FakeUser:
+        daily_goal = 2000
+
+    with patch("water_bot.crud.get_user", new=AsyncMock(return_value=FakeUser())):
+        with patch("water_bot.crud.get_daily_intake", new=AsyncMock(return_value=3000)):
+            await base_commands.handle_stats(message)
+
+    text = message.answer.call_args[1]["text"]
+    assert "100%" in text
+    assert "🟦" * 10 in text

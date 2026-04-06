@@ -1,7 +1,7 @@
 from datetime import UTC, datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
 
-from sqlalchemy import select, update
+from sqlalchemy import func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from water_bot.models.intake import WaterIntake
@@ -108,3 +108,33 @@ async def create_intake(
     session.add(intake)
     await session.commit()
     return intake
+
+
+async def get_daily_intake(session: AsyncSession, user_id: int) -> int:
+    today = datetime.now(UTC).date()
+    result = await session.execute(
+        select(func.sum(WaterIntake.amount_ml)).where(
+            WaterIntake.user_id == user_id,
+            func.date(WaterIntake.recorded_at) == today,
+        )
+    )
+    return result.scalar() or 0
+
+
+async def get_weekly_intake(
+    session: AsyncSession, user_id: int
+) -> list[tuple[date, int]]:
+    week_ago = datetime.now(UTC).date() - timedelta(days=7)
+    result = await session.execute(
+        select(
+            func.date(WaterIntake.recorded_at).label("day"),
+            func.sum(WaterIntake.amount_ml).label("total"),
+        )
+        .where(
+            WaterIntake.user_id == user_id,
+            func.date(WaterIntake.recorded_at) >= week_ago,
+        )
+        .group_by(func.date(WaterIntake.recorded_at))
+        .order_by(func.date(WaterIntake.recorded_at))
+    )
+    return result.all()

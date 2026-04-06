@@ -11,7 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from water_bot.config import settings
 from water_bot.database import AsyncSessionLocal
 from water_bot.routers import router as main_router
-from water_bot.scheduler import check_reminders
+from water_bot.scheduler import check_reminders, send_weekly_reports
 
 
 def setup_scheduler(
@@ -24,6 +24,12 @@ def setup_scheduler(
         check_reminders,
         "interval",
         seconds=30,
+        args=[session_factory, bot],
+    )
+    scheduler.add_job(
+        send_weekly_reports,
+        "interval",
+        weeks=1,
         args=[session_factory, bot],
     )
     scheduler.start()

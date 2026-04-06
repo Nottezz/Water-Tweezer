@@ -4,7 +4,9 @@ from zoneinfo import ZoneInfo
 
 from sqlalchemy import select
 
+from water_bot.crud import get_weekly_intake
 from water_bot.keyboards.inline import water_intake_keyboard
+from water_bot.models import UserSettings
 from water_bot.models.reminder import Reminder
 
 if TYPE_CHECKING:
@@ -37,6 +39,33 @@ async def process_reminder(reminder: Reminder, session: AsyncSession, bot) -> No
 
     reminder.next_run_at = next_time.astimezone(timezone.utc)
     await session.commit()
+
+
+async def send_weekly_reports(session_factory, bot) -> None:
+    async with session_factory() as session:
+        result = await session.scalars(select(UserSettings))
+        users = result.all()
+
+        for user in users:
+            rows = await get_weekly_intake(session, user.id)
+
+            if not rows:
+                continue
+
+            total = sum(r.total for r in rows)
+            avg = total // 7
+            best_day = max(rows, key=lambda r: r.total)
+            goals_reached = sum(1 for r in rows if r.total >= user.daily_goal)
+
+            text = f"""
+📊 Недельный отчёт
+
+💧 Всего выпито: {total} мл
+📈 Среднее в день: {avg} мл
+🏆 Лучший день: {best_day.day} — {best_day.total} мл
+🎯 Дней с выполненной целью: {goals_reached} из 7
+            """
+            await bot.send_message(user.id, text)
 
 
 async def check_reminders(session_factory, bot) -> None:
