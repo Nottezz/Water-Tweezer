@@ -1,5 +1,15 @@
 services:
 
+  bot:
+    build:
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      database:
+        condition: service_healthy
+    env_file:
+      - .env
+
   database:
     image: postgres:18
     env_file:
