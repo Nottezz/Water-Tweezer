@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Integer, String
+from sqlalchemy import Integer, String, BigInteger
 from sqlalchemy.orm import Mapped, mapped_column, relationship  # type: ignore
 
 from .base import Base
@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 class UserSettings(Base):
     __tablename__ = "user_settings"
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
     daily_goal: Mapped[int] = mapped_column(Integer, nullable=False)
     interval: Mapped[int] = mapped_column(Integer, nullable=False)
     timezone: Mapped[str] = mapped_column(String(255), nullable=False)
