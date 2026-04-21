@@ -12,8 +12,8 @@ COPY ./uv.lock ./
 COPY config.default.yaml ./
 COPY ./alembic ./alembic
 COPY ./alembic.ini ./alembic.ini
-COPY ./water_bot ./water_bot
+COPY ./water_tweezer ./water_tweezer
 
-RUN uv sync --locked --no-install-project --no-dev
+RUN uv sync --locked --no-dev
 
-CMD ["sh", "-c", "uv run alembic upgrade head && uv run python -m water_bot.main"]
+CMD ["sh", "-c", "uv run alembic upgrade head && uv run python -m water_tweezer.water_bot.main"]

@@ -8,10 +8,10 @@ from apscheduler.schedulers.asyncio import (
 )
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from water_bot.config import settings
-from water_bot.database import AsyncSessionLocal
-from water_bot.routers import router as main_router
-from water_bot.scheduler import check_reminders, send_weekly_reports
+from water_tweezer.core.config import settings
+from water_tweezer.core.database import AsyncSessionLocal
+from water_tweezer.water_bot.routers import router as main_router
+from water_tweezer.water_bot.scheduler import check_reminders, send_weekly_reports
 
 
 def setup_scheduler(

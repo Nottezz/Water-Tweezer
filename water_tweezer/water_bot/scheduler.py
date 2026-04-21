@@ -4,10 +4,10 @@ from zoneinfo import ZoneInfo
 
 from sqlalchemy import select
 
-from water_bot.crud import get_weekly_intake
-from water_bot.keyboards.inline import water_intake_keyboard
-from water_bot.models import UserSettings
-from water_bot.models.reminder import Reminder
+from water_tweezer.core.crud import get_weekly_intake
+from water_tweezer.core.models import UserSettings
+from water_tweezer.core.models.reminder import Reminder
+from water_tweezer.water_bot.keyboards.inline import water_intake_keyboard
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession

@@ -11,7 +11,7 @@ from pydantic_settings import (
 )
 
 BASE_DIR = Path(__file__).resolve().parent
-ROOT_DIR = BASE_DIR.parent
+ROOT_DIR = BASE_DIR.parent.parent
 
 
 class LoggingConfig(BaseModel):

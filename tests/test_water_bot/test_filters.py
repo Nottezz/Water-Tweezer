@@ -2,7 +2,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from water_bot.filters import IsPositiveInt, IsValidTimezone
+from water_tweezer.water_bot.filters import IsPositiveInt, IsValidTimezone
 
 
 @pytest.mark.parametrize(

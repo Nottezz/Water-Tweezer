@@ -1,15 +1,14 @@
 from itertools import chain
-from typing import Callable
 
 import pytest
 from aiogram.types import InlineKeyboardMarkup, ReplyKeyboardMarkup
 
-from water_bot.keyboards.inline import (
+from water_tweezer.water_bot.keyboards.inline import (
     INTAKE_AMOUNTS,
     settings_keyboard,
     water_intake_keyboard,
 )
-from water_bot.keyboards.reply import (
+from water_tweezer.water_bot.keyboards.reply import (
     DAILY_GOAL_OPTIONS,
     REMAINDER_TIMER,
     TIMEZONE_OPTIONS,

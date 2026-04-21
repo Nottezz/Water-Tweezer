@@ -4,7 +4,11 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from water_bot.scheduler import check_reminders, process_reminder, send_weekly_reports
+from water_tweezer.water_bot.scheduler import (
+    check_reminders,
+    process_reminder,
+    send_weekly_reports,
+)
 
 
 @pytest.mark.asyncio
@@ -115,7 +119,8 @@ async def test_send_weekly_reports_sends_message() -> None:
 
     with pytest.MonkeyPatch().context() as mp:
         mp.setattr(
-            "water_bot.scheduler.get_weekly_intake", AsyncMock(return_value=rows)
+            "water_tweezer.water_bot.scheduler.get_weekly_intake",
+            AsyncMock(return_value=rows),
         )
         await send_weekly_reports(session_factory, bot)
 
@@ -143,7 +148,10 @@ async def test_send_weekly_reports_skips_user_without_intakes() -> None:
     session_factory.return_value.__aexit__ = AsyncMock(return_value=False)
 
     with pytest.MonkeyPatch().context() as mp:
-        mp.setattr("water_bot.scheduler.get_weekly_intake", AsyncMock(return_value=[]))
+        mp.setattr(
+            "water_tweezer.water_bot.scheduler.get_weekly_intake",
+            AsyncMock(return_value=[]),
+        )
         await send_weekly_reports(session_factory, bot)
 
     bot.send_message.assert_not_called()
@@ -186,7 +194,8 @@ async def test_send_weekly_reports_goals_reached_count() -> None:
 
     with pytest.MonkeyPatch().context() as mp:
         mp.setattr(
-            "water_bot.scheduler.get_weekly_intake", AsyncMock(return_value=rows)
+            "water_tweezer.water_bot.scheduler.get_weekly_intake",
+            AsyncMock(return_value=rows),
         )
         await send_weekly_reports(session_factory, bot)
 

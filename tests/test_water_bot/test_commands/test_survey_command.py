@@ -2,16 +2,16 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from water_bot.crud import get_user
-from water_bot.keyboards.reply import TIMEZONE_OPTIONS
-from water_bot.routers.commands.survey_commands import (
+from water_tweezer.core.crud import get_user
+from water_tweezer.water_bot.keyboards.reply import TIMEZONE_OPTIONS
+from water_tweezer.water_bot.routers.commands.survey_commands import (
     set_daily_goal,
     set_interval,
     set_user_settings_if_yes,
     set_user_timezone_and_clean_state,
     start_setup,
 )
-from water_bot.survey_states import WaterSurvey
+from water_tweezer.water_bot.survey_states import WaterSurvey
 
 
 @pytest.mark.asyncio
@@ -74,7 +74,7 @@ async def test_full_fsm_survey_flow(async_session, monkeypatch) -> None:
     message.from_user.id = 12345
 
     monkeypatch.setattr(
-        "water_bot.routers.commands.survey_commands.AsyncSessionLocal",
+        "water_tweezer.water_bot.routers.commands.survey_commands.AsyncSessionLocal",
         lambda: async_session,
     )
 

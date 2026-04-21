@@ -4,8 +4,8 @@ from sqlalchemy import pool
 from sqlalchemy.ext.asyncio import AsyncConnection, create_async_engine
 
 from alembic import context
-from water_bot.config import settings
-from water_bot.models import Base, Reminder, UserSettings, WaterIntake
+from water_tweezer.core.config import settings
+from water_tweezer.core.models import Base
 
 target_metadata = Base.metadata
 

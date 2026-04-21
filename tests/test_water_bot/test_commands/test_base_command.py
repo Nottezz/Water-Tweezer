@@ -4,8 +4,8 @@ import pytest
 from aiogram import types
 from aiogram.types import Message
 
-from water_bot.keyboards.reply import get_on_start_kb
-from water_bot.routers.commands import base_commands
+from water_tweezer.water_bot.keyboards.reply import get_on_start_kb
+from water_tweezer.water_bot.routers.commands import base_commands
 
 
 @pytest.mark.asyncio
@@ -66,7 +66,7 @@ async def test_handle_settings_user_not_created() -> None:
     message.from_user.id = 12345
     message.answer = AsyncMock()
 
-    with patch("water_bot.crud.get_user", new=AsyncMock(return_value=None)):
+    with patch("water_tweezer.core.crud.get_user", new=AsyncMock(return_value=None)):
         await base_commands.handle_settings(message)
 
     message.answer.assert_called_once()
@@ -87,13 +87,15 @@ async def test_handle_settings_user_exists() -> None:
         interval = 60
         timezone = "Europe/Moscow"
 
-    with patch("water_bot.crud.get_user", new=AsyncMock(return_value=FakeUser())):
+    with patch(
+        "water_tweezer.core.crud.get_user", new=AsyncMock(return_value=FakeUser())
+    ):
         with patch(
-            "water_bot.crud.get_active_reminder",
+            "water_tweezer.core.crud.get_active_reminder",
             new=AsyncMock(return_value=MagicMock()),
         ):
             with patch(
-                "water_bot.routers.commands.base_commands.markdown.hbold",
+                "water_tweezer.water_bot.routers.commands.base_commands.markdown.hbold",
                 side_effect=lambda x: f"**{x}**",
             ):
                 await base_commands.handle_settings(message)
@@ -113,7 +115,7 @@ async def test_handle_stats_user_not_found() -> None:
     message.from_user.id = 12345
     message.answer = AsyncMock()
 
-    with patch("water_bot.crud.get_user", new=AsyncMock(return_value=None)):
+    with patch("water_tweezer.core.crud.get_user", new=AsyncMock(return_value=None)):
         await base_commands.handle_stats(message)
 
     message.answer.assert_called_once()
@@ -141,8 +143,12 @@ async def test_handle_stats_shows_progress() -> None:
     class FakeUser:
         daily_goal = 2000
 
-    with patch("water_bot.crud.get_user", new=AsyncMock(return_value=FakeUser())):
-        with patch("water_bot.crud.get_daily_intake", new=AsyncMock(return_value=1000)):
+    with patch(
+        "water_tweezer.core.crud.get_user", new=AsyncMock(return_value=FakeUser())
+    ):
+        with patch(
+            "water_tweezer.core.crud.get_daily_intake", new=AsyncMock(return_value=1000)
+        ):
             await base_commands.handle_stats(message)
 
     message.answer.assert_called_once()
@@ -164,8 +170,12 @@ async def test_handle_stats_caps_at_100_percent() -> None:
     class FakeUser:
         daily_goal = 2000
 
-    with patch("water_bot.crud.get_user", new=AsyncMock(return_value=FakeUser())):
-        with patch("water_bot.crud.get_daily_intake", new=AsyncMock(return_value=3000)):
+    with patch(
+        "water_tweezer.core.crud.get_user", new=AsyncMock(return_value=FakeUser())
+    ):
+        with patch(
+            "water_tweezer.core.crud.get_daily_intake", new=AsyncMock(return_value=3000)
+        ):
             await base_commands.handle_stats(message)
 
     text = message.answer.call_args[1]["text"]

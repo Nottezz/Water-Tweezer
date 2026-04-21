@@ -1,14 +1,14 @@
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock
 
 import pytest
 
-from water_bot.keyboards.inline import settings_keyboard
-from water_bot.routers.callbacks.settings import (
+from water_tweezer.water_bot.keyboards.inline import settings_keyboard
+from water_tweezer.water_bot.routers.callbacks.settings import (
     handle_create_reminder,
     handle_delete_reminder,
     handle_edit_reminder,
 )
-from water_bot.survey_states import WaterSurvey
+from water_tweezer.water_bot.survey_states import WaterSurvey
 
 
 @pytest.mark.asyncio
@@ -22,15 +22,15 @@ async def test_handle_create_reminder(async_session, monkeypatch) -> None:
         timezone = "Europe/Moscow"
 
     monkeypatch.setattr(
-        "water_bot.routers.callbacks.settings.AsyncSessionLocal",
+        "water_tweezer.water_bot.routers.callbacks.settings.AsyncSessionLocal",
         lambda: async_session,
     )
     monkeypatch.setattr(
-        "water_bot.routers.callbacks.settings.crud.get_user",
+        "water_tweezer.water_bot.routers.callbacks.settings.crud.get_user",
         AsyncMock(return_value=FakeUser()),
     )
     monkeypatch.setattr(
-        "water_bot.routers.callbacks.settings.crud.create_reminder",
+        "water_tweezer.water_bot.routers.callbacks.settings.crud.create_reminder",
         AsyncMock(),
     )
 
@@ -77,11 +77,11 @@ async def test_handle_delete_reminder(async_session, monkeypatch) -> None:
     callback.from_user.id = 12345
 
     monkeypatch.setattr(
-        "water_bot.routers.callbacks.settings.AsyncSessionLocal",
+        "water_tweezer.water_bot.routers.callbacks.settings.AsyncSessionLocal",
         lambda: async_session,
     )
     monkeypatch.setattr(
-        "water_bot.routers.callbacks.settings.crud.deactivate_user_reminders",
+        "water_tweezer.water_bot.routers.callbacks.settings.crud.deactivate_user_reminders",
         AsyncMock(),
     )
 

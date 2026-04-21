@@ -1,8 +1,8 @@
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock
 
 import pytest
 
-from water_bot.routers.callbacks.intake import handle_intake
+from water_tweezer.water_bot.routers.callbacks.intake import handle_intake
 
 
 @pytest.mark.asyncio
@@ -13,7 +13,7 @@ async def test_handle_intake_with_amount(async_session, monkeypatch) -> None:
     callback.message.edit_text = AsyncMock()
 
     monkeypatch.setattr(
-        "water_bot.routers.callbacks.intake.AsyncSessionLocal",
+        "water_tweezer.water_bot.routers.callbacks.intake.AsyncSessionLocal",
         lambda: async_session,
     )
 
@@ -31,7 +31,7 @@ async def test_handle_intake_skip(async_session, monkeypatch) -> None:
     callback.message.edit_text = AsyncMock()
 
     monkeypatch.setattr(
-        "water_bot.routers.callbacks.intake.AsyncSessionLocal",
+        "water_tweezer.water_bot.routers.callbacks.intake.AsyncSessionLocal",
         lambda: async_session,
     )
 

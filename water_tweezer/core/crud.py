@@ -4,10 +4,10 @@ from zoneinfo import ZoneInfo
 from sqlalchemy import func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from water_bot.models.intake import WaterIntake
-from water_bot.models.reminder import Reminder
-from water_bot.models.users import UserSettings
-from water_bot.schemas import UserSettingsCreate, UserSettingsUpdate
+from .models.intake import WaterIntake
+from .models.reminder import Reminder
+from .models.users import UserSettings
+from .schemas import UserSettingsCreate, UserSettingsUpdate
 
 
 async def get_user(session: AsyncSession, telegram_id: int) -> UserSettings | None:

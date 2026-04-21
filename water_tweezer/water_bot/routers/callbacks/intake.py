@@ -1,7 +1,7 @@
 from aiogram import F, Router, types
 
-from water_bot import crud
-from water_bot.database import AsyncSessionLocal
+from water_tweezer.core import crud
+from water_tweezer.core.database import AsyncSessionLocal
 
 router = Router()
 

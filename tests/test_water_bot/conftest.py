@@ -4,7 +4,7 @@ from typing import AsyncGenerator
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
-from water_bot.models import Base, Reminder
+from water_tweezer.core.models import Base, Reminder
 
 
 @pytest.fixture
