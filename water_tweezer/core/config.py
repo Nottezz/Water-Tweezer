@@ -42,6 +42,11 @@ class DataBaseConfig(BaseModel):
         return f"postgresql+asyncpg://{self.username}:{self.password}@{self.host}:{self.port}/{self.name}"
 
 
+class AccessTokenConfig(BaseModel):
+    secret_key: str
+    algorithm: str
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         case_sensitive=False,
@@ -90,6 +95,7 @@ class Settings(BaseSettings):
 
     logging: LoggingConfig = LoggingConfig()
     database: DataBaseConfig
+    access_token: AccessTokenConfig
     telegram_bot_token: str
 
 
