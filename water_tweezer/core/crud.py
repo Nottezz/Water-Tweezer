@@ -138,3 +138,35 @@ async def get_weekly_intake(
         .order_by(func.date(WaterIntake.recorded_at))
     )
     return result.all()
+
+
+async def get_today_entries(session: AsyncSession, user_id: int) -> list[WaterIntake]:
+    today = datetime.now(UTC).date()
+    result = await session.execute(
+        select(WaterIntake)
+        .where(
+            WaterIntake.user_id == user_id,
+            func.date(WaterIntake.recorded_at) == today,
+        )
+        .order_by(WaterIntake.recorded_at.desc())
+    )
+    return result.scalars().all()  # type: ignore
+
+
+async def get_monthly_intake(
+    session: AsyncSession, user_id: int
+) -> list[tuple[date, int]]:
+    month_ago = datetime.now(UTC).date() - timedelta(days=30)
+    result = await session.execute(
+        select(
+            func.date(WaterIntake.recorded_at).label("day"),
+            func.sum(WaterIntake.amount_ml).label("total"),
+        )
+        .where(
+            WaterIntake.user_id == user_id,
+            func.date(WaterIntake.recorded_at) >= month_ago,
+        )
+        .group_by(func.date(WaterIntake.recorded_at))
+        .order_by(func.date(WaterIntake.recorded_at))
+    )
+    return result.all()

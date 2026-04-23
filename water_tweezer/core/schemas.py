@@ -1,27 +1,20 @@
-from pydantic import BaseModel, ConfigDict, conint
+from pydantic import BaseModel, ConfigDict
 
 
 class UserSettingsBase(BaseModel):
-    telegram_id: int
     daily_goal: int
     interval: int
     timezone: str
 
-    model_config = ConfigDict(
-        from_attributes=True,
-    )
+    model_config = ConfigDict(from_attributes=True)
 
 
 class UserSettingsCreate(UserSettingsBase):
-    """
-    UserSettingsCreate schema
-    """
+    telegram_id: int
 
 
 class UserSettingsRead(UserSettingsBase):
-    """
-    UserSettingsRead schema
-    """
+    id: int
 
 
 class UserSettingsUpdate(BaseModel):
