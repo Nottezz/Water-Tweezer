@@ -18,7 +18,8 @@ async function request(path, options = {}) {
   return res.json()
 }
 
-// Auth
+// ─── Auth ─────────────────────────────────────────────────────────────────────
+
 export async function verifyTelegramAuth(initData) {
   const res = await fetch('/auth/verify', {
     method: 'POST',
@@ -31,31 +32,56 @@ export async function verifyTelegramAuth(initData) {
   return access_token
 }
 
-// Settings
+// ─── Settings ─────────────────────────────────────────────────────────────────
+
+// GET /api/settings/ → { telegram_id, daily_goal, interval, timezone }
 export async function getSettings() {
-  return request('/settings')
+  return request('/settings/')
 }
 
+// POST /api/settings/ → { telegram_id, daily_goal, interval, timezone }
 export async function updateSettings(data) {
-  return request('/settings', {
-    method: 'PUT',
+  return request('/settings/', {
+    method: 'POST',
     body: JSON.stringify(data),
   })
 }
 
-// Stats
-export async function getTodayStats() {
-  return request('/stats/today')
+// ─── Stats ────────────────────────────────────────────────────────────────────
+
+// GET /api/stats/today → number (total ml consumed today)
+// Normalised to { consumed_ml, goal_ml, entries } for TodayScreen
+export async function getTodayStats(goalMl) {
+  const consumed_ml = await request('/stats/today')
+  return {
+    consumed_ml,
+    goal_ml: goalMl,
+    entries: [],
+  }
 }
 
-export async function getWeekStats() {
-  return request('/stats/week')
+// GET /api/stats/week → [{ day, total }, ...]
+// Normalised to [{ date, consumed_ml, goal_ml }, ...] for StatsScreen
+export async function getWeekStats(goalMl) {
+  const raw = await request('/stats/week')
+  return raw.map(({ day, total }) => ({
+    date: day,
+    consumed_ml: total,
+    goal_ml: goalMl,
+  }))
 }
 
-export async function getMonthStats() {
-  return request('/stats/month')
+// GET /api/stats/month → deprecated на бэкенде, пока не реализован
+export async function getMonthStats(goalMl) {
+  const raw = await request('/stats/month')
+  return (raw ?? []).map(({ day, total }) => ({
+    date: day,
+    consumed_ml: total,
+    goal_ml: goalMl,
+  }))
 }
 
+// POST /api/stats/intake → WaterIntake record
 export async function addIntake(amount_ml) {
   return request('/stats/intake', {
     method: 'POST',

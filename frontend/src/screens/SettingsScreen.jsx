@@ -38,6 +38,26 @@ function RangeSlider({ label, value, min, max, step = 1, unit, onChange, marks }
   )
 }
 
+function HourPicker({ label, value, onChange }) {
+  const hours = Array.from({ length: 24 }, (_, i) => i)
+  return (
+    <div className="hour-picker">
+      <span className="slider-label">{label}</span>
+      <div className="hour-grid">
+        {hours.map(h => (
+          <button
+            key={h}
+            className={`hour-btn ${value === h ? 'active' : ''}`}
+            onClick={() => onChange(h)}
+          >
+            {String(h).padStart(2, '0')}
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export default function SettingsScreen() {
   const { settings, setSettings } = useApp()
   const [form, setForm] = useState(null)
@@ -62,8 +82,6 @@ export default function SettingsScreen() {
       setSaved(true)
       clearTimeout(savedTimer.current)
       savedTimer.current = setTimeout(() => setSaved(false), 2500)
-    } catch (e) {
-      alert(`Ошибка сохранения: ${e.message}`)
     } finally {
       setSaving(false)
     }

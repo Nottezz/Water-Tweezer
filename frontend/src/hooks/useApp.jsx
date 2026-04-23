@@ -13,7 +13,7 @@ export function AppProvider({ children }) {
     async function init() {
       try {
         const tg = window.Telegram?.WebApp
-        if (tg) {
+        if (tg?.initData) {
           tg.ready()
           tg.expand()
           await verifyTelegramAuth(tg.initData)

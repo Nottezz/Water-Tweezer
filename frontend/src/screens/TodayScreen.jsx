@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { getTodayStats, addIntake } from '../utils/api'
+import { useApp } from '../hooks/useApp'
 import dayjs from 'dayjs'
 import 'dayjs/locale/ru'
 dayjs.locale('ru')
@@ -24,15 +25,12 @@ function WaveProgress({ percent }) {
             <stop offset="100%" stopColor={color2} stopOpacity="0.7" />
           </linearGradient>
         </defs>
-        {/* Background circle */}
         <circle cx="100" cy="100" r="90" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
-        {/* Water fill */}
         <g clipPath="url(#circle-clip)">
           <rect x="-10" y="0" width="220" height="200" fill="url(#water-grad)" style={{
             transform: `translateY(${offset}%)`,
             transition: 'transform 1.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
           }} />
-          {/* Wave top */}
           <path
             d="M-10,0 Q20,-12 50,0 Q80,12 110,0 Q140,-12 170,0 Q200,12 220,0 L220,20 L-10,20 Z"
             fill={color1}
@@ -44,7 +42,6 @@ function WaveProgress({ percent }) {
             }}
           />
         </g>
-        {/* Border ring */}
         <circle cx="100" cy="100" r="90" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="2" />
       </svg>
       <div className="wave-label">
@@ -66,6 +63,7 @@ function EntryRow({ entry }) {
 }
 
 export default function TodayScreen() {
+  const { settings } = useApp()
   const [stats, setStats] = useState(null)
   const [adding, setAdding] = useState(false)
   const [toast, setToast] = useState(null)
@@ -113,13 +111,11 @@ export default function TodayScreen() {
     <div className="screen today-screen">
       {toast && <div className="toast">{toast}</div>}
 
-      {/* Header */}
       <div className="today-header">
         <h1 className="today-title">Сегодня</h1>
         <p className="today-sub">{dayjs().format('D MMMM, dddd')}</p>
       </div>
 
-      {/* Progress circle */}
       <div className="progress-section">
         <WaveProgress percent={percent} />
         <div className="progress-numbers">
@@ -141,7 +137,6 @@ export default function TodayScreen() {
         )}
       </div>
 
-      {/* Quick add */}
       <div className="quick-section">
         <p className="section-label">Добавить</p>
         <div className="quick-buttons">
@@ -160,7 +155,6 @@ export default function TodayScreen() {
         </div>
       </div>
 
-      {/* Entry history */}
       {entries.length > 0 && (
         <div className="entries-section">
           <p className="section-label">Записи</p>

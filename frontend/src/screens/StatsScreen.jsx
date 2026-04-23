@@ -54,11 +54,12 @@ export default function StatsScreen() {
   useEffect(() => {
     setData([])
     setLoadError(null)
-    const fetch = tab === 'week' ? getWeekStats : getMonthStats
-    fetch()
+    const goal = settings?.daily_goal ?? 2000
+    const fetchFn = tab === 'week' ? getWeekStats : getMonthStats
+    fetchFn(goal)
       .then(setData)
       .catch(e => setLoadError(e.message))
-  }, [tab])
+  }, [tab, settings])
 
   if (loadError) return <div className="screen-loading"><p className="error-msg">Ошибка: {loadError}</p></div>
   if (!data.length) return <div className="screen-loading"><div className="loader" /></div>
